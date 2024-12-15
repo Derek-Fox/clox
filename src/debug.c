@@ -1,10 +1,11 @@
 #include "debug.h"
-#include "value.h"
 
 #include <stdio.h>
 
+#include "value.h"
+
 static int constantInstruction(const char* name, Chunk* chunk, int offset) {
-  uint8_t constant = chunk->code[offset+1];
+  uint8_t constant = chunk->code[offset];
   printf("%-16s %4d '", name, constant);
   printValue(chunk->constants.values[constant]);
   printf("'\n");
@@ -22,12 +23,11 @@ void disassembleChunk(Chunk* chunk, const char* name) {
   for (int offset = 0; offset < chunk->count;) {
     offset = disassembleInstruction(chunk, offset);
   }
-
 }
 
 int disassembleInstruction(Chunk* chunk, int offset) {
   printf("%04d ", offset);
-  
+
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
     printf("  | ");
   } else {

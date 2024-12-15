@@ -1,11 +1,10 @@
-#include "common.h"
-#include "chunk.h"
-#include "debug.h"
-
 #include <stdio.h>
 
-int main() { 
-  printf("%ld\n", sizeof(int));
+#include "chunk.h"
+#include "common.h"
+#include "debug.h"
+
+int main() {
   Chunk chunk;
   initChunk(&chunk);
 
@@ -18,5 +17,5 @@ int main() {
   disassembleChunk(&chunk, "test chunk");
   freeChunk(&chunk);
 
-  return 0;  
+  return 0;
 }
