@@ -45,7 +45,7 @@ static char* readFile(const char* path) {
     exit(74);
   }
   
-  buffer[bytesRead] = "\0";
+  buffer[bytesRead] = '\0';
 
   fclose(file);
   return buffer;
@@ -60,7 +60,7 @@ static void runFile(const char* path) {
   if (result == INTERPRET_RUNTIME_ERROR) exit(70);
 }
 
-int main(int argc, const char* argv) {
+int main(int argc, const char** argv) {
   initVM();
 
   if (argc == 1) {
