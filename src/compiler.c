@@ -40,6 +40,30 @@ Chunk* compilingChunk;
 
 static Chunk* currentChunk() { return compilingChunk; }
 
+/* static error functions */
+static void errorAt(Token* token, const char* message) {
+  if (parser.panicMode) return;
+  parser.panicMode = true;
+  fprintf(stderr, "[line %d] Error", token->line);
+
+  if (token->type == TOKEN_EOF) {
+    fprintf(stderr, " at end");
+  } else if (token->type == TOKEN_ERROR) {
+    // print nothing for error tokens
+  } else {
+    fprintf(stderr, " at '%.*s'", token->length, token->start);
+  }
+
+  fprintf(stderr, ": %s\n", message);
+  parser.hadError = true;
+}
+
+static void errorAtCurrent(const char* message) {
+  errorAt(&parser.current, message);
+}
+
+static void error(const char* message) { errorAt(&parser.previous, message); }
+
 /* Static parsing functions */
 static void advance() {
   parser.previous = parser.current;
@@ -190,49 +214,28 @@ ParseRule rules[] = {
 
 static void parsePrecedence(Precedence precedence) {
   advance();
-  ParseFn prefixRule = getRule(parser.previous.type)->prefix; //Look up function for the last consumed token
+  ParseFn prefixRule =
+      getRule(parser.previous.type)
+          ->prefix;  // Look up function for the last consumed token
 
-  if (prefixRule == NULL) { //if it doesn't exist, there must be a syntax error
+  if (prefixRule == NULL) {  // if it doesn't exist, there must be a syntax
+                             // error
     error("Expect expression.");
     return;
   }
 
-  prefixRule(); // execute prefix's function
+  prefixRule();  // execute prefix's function
 
-  /* while the given precedence is lower than the next expression's precedence, continue with the next expression */
-  while(precedence <= getRule(parser.current.type)->precedence) {
+  /* while the given precedence is lower than the next expression's precedence,
+   * continue with the next expression */
+  while (precedence <= getRule(parser.current.type)->precedence) {
     advance();
     ParseFn infixRule = getRule(parser.previous.type)->infix;
     infixRule();
   }
 }
 
-static ParseRule* getRule(TokenType type) {
-  return &rules[type];
-}
-/* static error functions */
-static void errorAtCurrent(const char* message) {
-  errorAt(&parser.current, message);
-}
-
-static void error(const char* message) { errorAt(&parser.previous, message); }
-
-static void errorAt(Token* token, const char* message) {
-  if (parser.panicMode) return;
-  parser.panicMode = true;
-  fprintf(stderr, "[line %d] Error", token->line);
-
-  if (token->type == TOKEN_EOF) {
-    fprintf(stderr, " at end");
-  } else if (token->type == TOKEN_ERROR) {
-    // print nothing for error tokens
-  } else {
-    fprintf(stderr, " at '%.*s'", token->length, token->start);
-  }
-
-  fprintf(stderr, ": %s\n", message);
-  parser.hadError = true;
-}
+static ParseRule* getRule(TokenType type) { return &rules[type]; }
 
 /* compile function, visible to other modules */
 bool compile(const char* source, Chunk* chunk) {
