@@ -6,6 +6,10 @@
 #include "common.h"
 #include "scanner.h"
 
+#ifdef DEBUG_PRINT_CODE
+#include "debug.h"
+#endif
+
 /* Parser struct and global instance */
 typedef struct {
   Token current;
@@ -111,7 +115,14 @@ static void emitConstant(Value value) {
   emitBytes(OP_CONSTANT, makeConstant(value));
 }
 
-static void endCompiler() { emitReturn(); }
+static void endCompiler() { 
+  emitReturn(); 
+#ifdef DEBUG_PRINT_CODE
+  if (!parser.hadError) {
+    disassembleChunk(currentChunk(), "code");
+  }
+#endif
+  }
 
 /* Forward declarations for use in grammar rule functions */
 static void expression();
