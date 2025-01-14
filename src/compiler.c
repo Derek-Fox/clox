@@ -200,6 +200,7 @@ static void number() {
 static void string() {
   emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
+
 static void unary() {
   TokenType operatorType = parser.previous.type;
 
