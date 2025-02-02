@@ -137,9 +137,12 @@ static InterpretResult run() {
         push(NUMBER_VAL(-AS_NUMBER(pop())));
         break;
       case OP_RETURN:
+        // Exit interpreter.
+        return INTERPRET_OK;
+      case OP_PRINT:
         printValue(pop());
         printf("\n");
-        return INTERPRET_OK;
+        break;
       case OP_CONSTANT:
         Value constant = READ_CONSTANT();
         push(constant);

@@ -71,11 +71,9 @@ static void error(const char* message) { errorAt(&parser.previous, message); }
 /* Static parsing functions */
 static void advance() {
   parser.previous = parser.current;
-
   for (;;) {
     parser.current = scanToken();
     if (parser.current.type != TOKEN_ERROR) break;
-
     errorAtCurrent(parser.current.start);
   }
 }
@@ -85,8 +83,17 @@ static void consume(TokenType type, const char* message) {
     advance();
     return;
   }
-
   errorAtCurrent(message);
+}
+
+static bool check(TokenType type) {
+  return parser.current.type == type;
+}
+
+static bool match(TokenType type) {
+  if (!check(type)) return false;
+  advance();
+  return true;
 }
 
 /* static bytecode emitting functions */
@@ -126,6 +133,8 @@ static void endCompiler() {
 
 /* Forward declarations for use in grammar rule functions */
 static void expression();
+static void declaration();
+static void statement();
 static ParseRule* getRule(TokenType token);
 static void parsePrecedence(Precedence precedence);
 
@@ -187,6 +196,20 @@ static void literal() {
 }
 static void expression() { parsePrecedence(PREC_ASSIGNMENT); }
 
+static void printStatement() {
+  expression();
+  consume(TOKEN_SEMICOLON, "Expect ';' after value.");
+  emitByte(OP_PRINT);
+}
+
+static void declaration() { statement(); }
+
+static void statement() {
+  if (match(TOKEN_PRINT)) {
+    printStatement();
+  }
+}
+
 static void grouping() {
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
@@ -198,7 +221,8 @@ static void number() {
 }
 
 static void string() {
-  emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
+  emitConstant(OBJ_VAL(
+      copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
 static void unary() {
@@ -297,8 +321,11 @@ bool compile(const char* source, Chunk* chunk) {
   parser.panicMode = false;
 
   advance();
-  expression();
-  consume(TOKEN_EOF, "Expect end of expression.");
+
+  while (!match(TOKEN_EOF)) {
+    declaration();
+  }
+
   endCompiler();
   return !parser.hadError;
 }
