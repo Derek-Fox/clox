@@ -58,9 +58,9 @@ static void concatenate() {
 }
 
 void initVM() {
-   resetStack(); 
-   vm.objects = NULL;
-   initTable(&vm.strings);
+  resetStack();
+  vm.objects = NULL;
+  initTable(&vm.strings);
 };
 
 void freeVM() {
@@ -155,6 +155,9 @@ static InterpretResult run() {
         break;
       case OP_FALSE:
         push(BOOL_VAL(false));
+        break;
+      case OP_POP:
+        pop();
         break;
       case OP_EQUAL: {
         Value b = pop();
