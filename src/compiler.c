@@ -296,7 +296,7 @@ static void namedVariable(Token name, bool canAssign) {
     expression();
     emitBytes(OP_SET_GLOBAL, arg);
   } else {
-    emitBytes(OP_SET_GLOBAL, arg);
+    emitBytes(OP_GET_GLOBAL, arg);
   }
 }
 
