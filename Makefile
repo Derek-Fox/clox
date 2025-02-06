@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99 -g
+CFLAGS = -Wall -Wextra -std=c99 -g -Wno-unused-parameter
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
