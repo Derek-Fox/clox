@@ -91,7 +91,7 @@ static InterpretResult run() {
   // actual function
 #ifdef DEBUG_TRACE_EXECUTION
   printf("\n== execution ==");
-#endif 
+#endif
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION  // only print this info if debugging
@@ -154,6 +154,11 @@ static InterpretResult run() {
         uint16_t offset = READ_SHORT();
         if (isFalsey(peek(0))) vm.ip += offset;
         break;
+      case OP_LOOP: {
+        uint16_t offset = READ_SHORT();
+        vm.ip -= offset;
+        break;
+      }
       case OP_RETURN:
         // Exit interpreter.
         return INTERPRET_OK;
