@@ -1,0 +1,7 @@
+var b;
+if (true) {
+  b = "then";
+} else {
+  b = "else";
+}
+print b;
