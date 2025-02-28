@@ -25,7 +25,7 @@ static void runtimeError(const char* format, ...) {
   fputs("\n", stderr);
 
   CallFrame* frame = &vm.frames[vm.frameCount - 1];
-  size_t instruction = frame->ip - (frame->function->chunk.code) - 1;
+  size_t instruction = frame->ip - frame->function->chunk.code - 1;
   int line = frame->function->chunk.lines[instruction];
   fprintf(stderr, "[line %d] in script\n", line);
   resetStack();
@@ -96,7 +96,7 @@ static InterpretResult run() {
 
   // actual function
 #ifdef DEBUG_TRACE_EXECUTION
-  printf("\n== execution ==");
+  printf("\n== execution ==\n");
 #endif
 
   for (;;) {
