@@ -1,6 +1,11 @@
-fun test(param) {
-  var a = 1;
-  print a;
+fun fib(n) {
+  if (n < 2) return n;
+  return fib(n - 2) + fib(n - 1);
 }
 
-print test;
+print "Calculating fib(35)";
+var start = clock();
+print fib(35);
+var end = clock();
+print "Elapsed time: ";
+print (end - start);
