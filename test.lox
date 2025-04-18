@@ -1,8 +1,9 @@
-fun outer() {
-  var x = "outside";
-  fun inner() {
-    print x;
-  }
-  inner();
+fun makeClosure() {
+  var a = "THIS IS A TESTING STRING";
+  fun f() { print a; }
+  return f;
 }
-outer();
+{
+  var closure = makeClosure();
+  closure();
+}
