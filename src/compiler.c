@@ -301,29 +301,6 @@ static void addLocal(Token name) {
   local->isCaptured = false;
 }
 
-static void namedVariable(Token name, bool canAssign) {
-  uint8_t getOp, setOp;
-  int arg = resolveLocal(current, &name);
-  if (arg != -1) {
-    getOp = OP_GET_LOCAL;
-    setOp = OP_SET_LOCAL;
-  } else if ((arg = resolveUpvalue(current, &name)) != -1) {
-    getOp = OP_GET_UPVALUE;
-    setOp = OP_SET_UPVALUE;
-  } else {
-    arg = identifierConstant(&name);
-    getOp = OP_GET_GLOBAL;
-    setOp = OP_SET_GLOBAL;
-  }
-
-  if (canAssign && match(TOKEN_EQUAL)) {
-    expression();
-    emitBytes(setOp, arg);
-  } else {
-    emitBytes(getOp, arg);
-  }
-}
-
 static void declareVariable() {
   if (current->scopeDepth == 0) return;
 
@@ -375,6 +352,29 @@ static uint8_t argumentList() {
   }
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after arguments.");
   return argCount;
+}
+
+static void namedVariable(Token name, bool canAssign) {
+  uint8_t getOp, setOp;
+  int arg = resolveLocal(current, &name);
+  if (arg != -1) {
+    getOp = OP_GET_LOCAL;
+    setOp = OP_SET_LOCAL;
+  } else if ((arg = resolveUpvalue(current, &name)) != -1) {
+    getOp = OP_GET_UPVALUE;
+    setOp = OP_SET_UPVALUE;
+  } else {
+    arg = identifierConstant(&name);
+    getOp = OP_GET_GLOBAL;
+    setOp = OP_SET_GLOBAL;
+  }
+
+  if (canAssign && match(TOKEN_EQUAL)) {
+    expression();
+    emitBytes(setOp, arg);
+  } else {
+    emitBytes(getOp, arg);
+  }
 }
 
 static void and_(bool canAssign) {
