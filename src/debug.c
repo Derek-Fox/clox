@@ -69,6 +69,10 @@ int disassembleInstruction(Chunk* chunk, int offset) {
       return constantInstruction("OP_GET_GLOBAL", chunk, offset);
     case OP_DEFINE_GLOBAL:
       return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
+    case OP_GET_PROPERTY:
+      return constantInstruction("OP_GET_PROPERTY", chunk, offset);
+    case OP_SET_PROPERTY:
+      return constantInstruction("OP_SET_PROPERTY", chunk, offset);
     case OP_GET_UPVALUE:
       return byteInstruction("OP_GET_UPVALUE", chunk, offset);
     case OP_SET_UPVALUE:
@@ -126,6 +130,8 @@ int disassembleInstruction(Chunk* chunk, int offset) {
       return simpleInstruction("OP_RETURN", offset);
     case OP_CLASS:
       return constantInstruction("OP_CLASS", chunk, offset);
+    case OP_METHOD:
+      return constantInstruction("OP_METHOD", chunk, offset);
     default:
       printf("Unknown opcode %d\n", instruction);
       return offset + 1;

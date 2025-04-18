@@ -42,6 +42,7 @@ ObjClosure* newClosure(ObjFunction* function) {
 ObjClass* newClass(ObjString* name) {
   ObjClass* class = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
   class->name = name;
+  initTable(&class->methods);
   return class;
 }
 
