@@ -1,9 +1,11 @@
-fun makeClosure() {
-  var a = "THIS IS A TESTING STRING";
-  fun f() { print a; }
-  return f;
+class CoffeeMaker {
+  init(coffee) {
+    this.coffee = coffee;
+  }
+  brew() {
+    print "Enjoy your cup of " + this.coffee;
+    this.coffee = nil;
+  }
 }
-{
-  var closure = makeClosure();
-  closure();
-}
+var maker = CoffeeMaker("coffee and chicory");
+maker.brew();
