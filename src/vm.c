@@ -156,7 +156,7 @@ static bool invoke(ObjString* name, int argCount) {
 
 static bool bindMethod(ObjClass* class, ObjString* name) {
   Value method;
-  if(!tableGet(&class->methods, name, &method)) {
+  if (!tableGet(&class->methods, name, &method)) {
     runtimeError("Undefined property '%s'.", name->chars);
     return false;
   }
@@ -248,7 +248,7 @@ void initVM() {
 
   vm.initString = NULL;
   vm.initString = copyString("init", 4);
-  
+
   defineNative("clock", clockNative, 0);
 };
 
@@ -516,8 +516,7 @@ static InterpretResult run() {
       case OP_GET_SUPER: {
         ObjString* name = READ_STRING();
         ObjClass* superclass = AS_CLASS(pop());
-
-        if(!bindMethod(superclass, name)) {
+        if (!bindMethod(superclass, name)) {
           return INTERPRET_RUNTIME_ERROR;
         }
         break;

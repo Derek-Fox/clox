@@ -4,7 +4,7 @@
 #include "common.h"
 
 /* forward declarations */
-typedef struct Obj Obj;  
+typedef struct Obj Obj;
 typedef struct ObjString ObjString;
 
 typedef enum {
