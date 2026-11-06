@@ -33,6 +33,13 @@ ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
   return bound;
 }
 
+ObjClass* newClass(ObjString* name) {
+  ObjClass* klass = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
+  klass->name = name;
+  initTable(&klass->methods);
+  return klass;
+}
+
 ObjClosure* newClosure(ObjFunction* function) {
   ObjUpvalue** upvalues = ALLOCATE(ObjUpvalue*, function->upvalueCount);
   for (int i = 0; i < function->upvalueCount; i++) {
@@ -46,13 +53,6 @@ ObjClosure* newClosure(ObjFunction* function) {
   return closure;
 }
 
-ObjClass* newClass(ObjString* name) {
-  ObjClass* class = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
-  class->name = name;
-  initTable(&class->methods);
-  return class;
-}
-
 ObjFunction* newFunction() {
   ObjFunction* function = ALLOCATE_OBJ(ObjFunction, OBJ_FUNCTION);
   function->arity = 0;
@@ -62,17 +62,16 @@ ObjFunction* newFunction() {
   return function;
 }
 
-ObjInstance* newInstance(ObjClass* class) {
+ObjInstance* newInstance(ObjClass* klass) {
   ObjInstance* instance = ALLOCATE_OBJ(ObjInstance, OBJ_INSTANCE);
-  instance->class = class;
+  instance->klass = klass;
   initTable(&instance->fields);
   return instance;
 }
 
-ObjNative* newNative(NativeFn function, int arity) {
+ObjNative* newNative(NativeFn function) {
   ObjNative* native = ALLOCATE_OBJ(ObjNative, OBJ_NATIVE);
   native->function = function;
-  native->arity = arity;
   return native;
 }
 
@@ -122,8 +121,8 @@ ObjString* copyString(const char* chars, int length) {
 
 ObjUpvalue* newUpvalue(Value* slot) {
   ObjUpvalue* upvalue = ALLOCATE_OBJ(ObjUpvalue, OBJ_UPVALUE);
-  upvalue->location = slot;
   upvalue->closed = NIL_VAL;
+  upvalue->location = slot;
   upvalue->next = NULL;
   return upvalue;
 }
@@ -141,17 +140,17 @@ void printObject(Value value) {
     case OBJ_BOUND_METHOD:
       printFunction(AS_BOUND_METHOD(value)->method->function);
       break;
-    case OBJ_CLOSURE:
-      printFunction(AS_CLOSURE(value)->function);
-      break;
     case OBJ_CLASS:
       printf("%s", AS_CLASS(value)->name->chars);
+      break;
+    case OBJ_CLOSURE:
+      printFunction(AS_CLOSURE(value)->function);
       break;
     case OBJ_FUNCTION:
       printFunction(AS_FUNCTION(value));
       break;
     case OBJ_INSTANCE:
-      printf("%s instance", AS_INSTANCE(value)->class->name->chars);
+      printf("%s instance", AS_INSTANCE(value)->klass->name->chars);
       break;
     case OBJ_NATIVE:
       printf("<native fn>");

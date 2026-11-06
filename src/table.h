@@ -26,4 +26,4 @@ ObjString* tableFindString(Table* table, const char* chars, int length,
 void tableRemoveWhite(Table* table);
 void markTable(Table* table);
 
-#endif  // !clox_table_h
+#endif

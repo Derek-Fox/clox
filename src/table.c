@@ -21,14 +21,14 @@ void freeTable(Table* table) {
 }
 
 static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
-  uint32_t index = key->hash % capacity;
+  uint32_t index = key->hash & (capacity - 1);
   Entry* tombstone = NULL;
 
   for (;;) {
     Entry* entry = &entries[index];
     if (entry->key == NULL) {
       if (IS_NIL(entry->value)) {
-        return (tombstone != NULL) ? tombstone : entry;
+        return tombstone != NULL ? tombstone : entry;
       } else {
         if (tombstone == NULL) tombstone = entry;
       }
@@ -36,7 +36,7 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
       return entry;
     }
 
-    index = (index + 1) % capacity;
+    index = (index + 1) & (capacity - 1);
   }
 }
 
@@ -80,7 +80,7 @@ bool tableSet(Table* table, ObjString* key, Value value) {
   }
 
   Entry* entry = findEntry(table->entries, table->capacity, key);
-  bool isNewKey = (entry->key == NULL);
+  bool isNewKey = entry->key == NULL;
   if (isNewKey && IS_NIL(entry->value)) table->count++;
 
   entry->key = key;
@@ -111,8 +111,8 @@ void tableAddAll(Table* from, Table* to) {
 ObjString* tableFindString(Table* table, const char* chars, int length,
                            uint32_t hash) {
   if (table->count == 0) return NULL;
-  uint32_t index = hash % table->capacity;
 
+  uint32_t index = hash & (table->capacity - 1);
   for (;;) {
     Entry* entry = &table->entries[index];
     if (entry->key == NULL) {
@@ -122,7 +122,7 @@ ObjString* tableFindString(Table* table, const char* chars, int length,
       return entry->key;
     }
 
-    index = (index + 1) % table->capacity;
+    index = (index + 1) & (table->capacity - 1);
   }
 }
 
