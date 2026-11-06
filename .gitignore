@@ -1,3 +1,6 @@
 build/
+build-profile/
+gmon.out
 clox
+clox-profile
 .vscode/
